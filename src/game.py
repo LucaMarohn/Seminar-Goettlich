@@ -12,7 +12,7 @@ play = np.zeros((1, 3))    # money-card played by player 1, player 2, player 3
 points = np.zeros((1, 3))  # points by player 1, player 2, player 3
 
 # example of money-card played by player 1, player 2, player 3
-play = np.array([[3, 3, 3]])
+play = np.array([[15, 3, 3]])
 
 def round_engine(n_players, value_cards, currency_cards, play):
     value_card_1 = value_cards[0]
@@ -47,3 +47,5 @@ round_engine(n_players, value_cards, currency_cards, play)
 print("Value cards: ", value_cards)
 print("Points: ", points)
 print("Play: ", play)
+
+#wir testen weiter
