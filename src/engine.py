@@ -1,14 +1,5 @@
 import numpy as np
 
-n_players = 3
-value_cards = np.arange(-5, 11)
-value_cards = value_cards[value_cards != 0]
-np.random.shuffle(value_cards)
-
-hands = [list(range(1, 16)) for _ in range(n_players)]
-play = np.zeros((1, 3))    # money-card played by player 1, player 2, player 3
-points = np.zeros((1, 3))  # points by player 1, player 2, player 3
-
 def round_engine(value_cards, play, points):
     value_cards = value_cards.copy() 
     play = play.copy()
@@ -41,10 +32,6 @@ def round_engine(value_cards, play, points):
                 value_cards[0] += value_card_1
     return value_cards, points
 
-
-value_cards, points = round_engine(value_cards, play, points)
-
-
 def get_human_choice(player_idx, hands):
     hand = hands[player_idx]          # list for specific player
     while True:
@@ -63,13 +50,3 @@ def get_human_choice(player_idx, hands):
 
         hand.remove(choice)           #card can’t be used again
         return choice
-
-play = np.array([get_human_choice(i, hands) for i in range(n_players)], dtype=int)
-
-print("Play vector:", play)          # e.g. [3 5 5]
-print("Top value card:", value_cards[0])
-
-value_cards, points = round_engine(value_cards, play, points)
-
-print("Points after round:", points)
-print("Remaining value cards:", len(value_cards))
