@@ -50,3 +50,13 @@ def get_human_choice(player_idx, hands):
 
         hand.remove(choice)           #card can’t be used again
         return choice
+    
+def bot_randomiser(player_idx, hands, rng=None):
+    hand = hands[player_idx]
+    if rng is None:
+        rng = np.random.default_rng()
+
+    choice = int(rng.choice(hand))
+    hand.remove(choice)
+    print(f"Bot (Player {player_idx+1}) played: {choice}")
+    return choice

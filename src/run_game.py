@@ -1,10 +1,13 @@
 import numpy as np
-from engine import round_engine, get_human_choice
+from engine import round_engine, get_human_choice, bot_randomiser
 
 n_players = 3
 value_cards = np.arange(-5, 11)
 value_cards = value_cards[value_cards != 0]
 np.random.shuffle(value_cards)
+
+player_type = ["human", "bot", "bot"]
+rng = np.random.default_rng()
 
 hands = [list(range(1, 16)) for _ in range(n_players)]
 points = np.zeros((1, n_players), dtype=int)  # points by player 1, player 2, player 3
@@ -16,7 +19,14 @@ while len(value_cards) > 0 and all(len(h) > 0 for h in hands):
     print("Top value card:", value_cards[0])
     print("Current points:", points)
 
-    play = np.array([get_human_choice(i, hands) for i in range(n_players)], dtype=int)
+    plays = []
+    for i in range(n_players):
+        if player_type[i] == "human":
+            plays.append(get_human_choice(i, hands))
+        else:
+            plays.append(bot_randomiser(i, hands, rng))
+
+    play = np.array(plays, dtype=int)
     print("Play vector:", play)
 
     points_before = points.copy()
