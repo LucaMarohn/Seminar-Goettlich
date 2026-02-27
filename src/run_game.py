@@ -6,7 +6,7 @@ value_cards = np.arange(-5, 11)
 value_cards = value_cards[value_cards != 0]
 np.random.shuffle(value_cards)
 
-player_type = ["human", "bot", "bot"]
+player_type = ["human", "human", "bot"]
 rng = np.random.default_rng()
 
 hands = [list(range(1, 16)) for _ in range(n_players)]
