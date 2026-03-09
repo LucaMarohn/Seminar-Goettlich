@@ -6,7 +6,7 @@ from strategy import get_human_choice, bot_randomiser, bot_negative_strategy
 # -------------------------
 # Player configuration
 # -------------------------
-n_humans = 0
+n_humans = 1
 n_bots = 2
 
 # For each bot, choose exactly one strategy:
