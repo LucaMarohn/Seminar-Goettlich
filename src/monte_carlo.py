@@ -3,8 +3,16 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 from engine import round_engine
-from strategy import bot_randomiser, bot_negative_strategy, bot_get_high_cards
+from strategy import (
+    bot_randomizer,
+    bot_negative_strategy,
+    bot_get_high_cards,
+    bot_memory_high_advantage, 
+    bot_get_high_cards_schonen,
+    bot_interval_strategy
+)
 
+from strategy import highest_card_opportunity, highest_card_played
 
 def simulate_game(bot_strategies, rng):
     n_players = len(bot_strategies)
@@ -48,11 +56,11 @@ def simulate_game(bot_strategies, rng):
     reveal_index = 0
 
     while len(value_cards) > 0 and all(len(h) > 0 for h in hands):
-        # Das ist die tatsächlich neu aufgedeckte Einzelkarte
+        # Tatsächlich neu aufgedeckte Einzelkarte
         revealed_single_card = int(original_value_cards[reveal_index])
         reveal_index += 1
 
-        # Das ist der aktuell sichtbare Potwert, evtl. schon kumuliert
+        # Aktuell sichtbarer Potwert, evtl. schon kumuliert
         visible_value_card = int(value_cards[0])
 
         pending_value_cards.append(revealed_single_card)
@@ -61,7 +69,13 @@ def simulate_game(bot_strategies, rng):
         plays = []
 
         for i, strategy in enumerate(bot_strategies):
-            chosen_card = strategy(i, hands, visible_value_card, rng)
+            chosen_card = strategy(
+                i,
+                hands,
+                visible_value_card,
+                rng,
+                value_cards_remaining=value_cards.copy(),
+            )
             plays.append(chosen_card)
 
         play = np.array(plays, dtype=int)
@@ -247,12 +261,14 @@ def plot_results(results):
 
     value_card_labels = [-5, -4, -3, -2, -1] + list(range(1, 11))
 
+    # 1) Durchschnittliche Punkte
     plt.figure(figsize=(8, 5))
     plt.bar(bot_names, avg_points, yerr=std_points, capsize=5)
     plt.ylabel("Average points")
     plt.title("Average points with standard deviation")
     plt.tight_layout()
 
+    # 2) Rangverteilung
     plt.figure(figsize=(10, 6))
     x = np.arange(n_players)
     width = 0.6 / n_players
@@ -272,6 +288,7 @@ def plot_results(results):
     plt.legend()
     plt.tight_layout()
 
+    # 3) Verteilung der Endpunkte
     plt.figure(figsize=(10, 6))
     min_point = int(np.min(all_points))
     max_point = int(np.max(all_points))
@@ -295,6 +312,7 @@ def plot_results(results):
     plt.legend()
     plt.tight_layout()
 
+    # 4) Einzelne Wertkarten
     plt.figure(figsize=(11, 6))
     x = np.arange(len(value_card_labels))
     width = 0.8 / n_players
@@ -319,15 +337,23 @@ def plot_results(results):
 
 if __name__ == "__main__":
     bot_strategies = [
-        bot_randomiser,
+        bot_randomizer,
         bot_negative_strategy,
-        bot_get_high_cards,
+        #bot_get_high_cards,
+        #bot_memory_high_advantage, 
+        bot_get_high_cards_schonen,
+        #bot_get_high_cards_schonen,
+        bot_interval_strategy
     ]
 
     bot_names = [
-        "Randomiser A",
+        "Randomizer A",
         "Negative Strategy",
-        "High Card Bot",
+        #"Get High Cards",
+        #"Memory High Advantage",
+        "Get High Cards Schonen",
+        #"Get High Cards Schonen 2",
+        "Interval Strategy"
     ]
 
     results = monte_carlo_compare(
@@ -339,3 +365,13 @@ if __name__ == "__main__":
 
     print_results(results)
     plot_results(results)
+
+print("\n" + "=" * 60)
+print("Highest card advantage statistics")
+print("=" * 60)
+
+print(f"Times bot had unique highest card: {highest_card_opportunity}")
+print(f"Times bot actually played it:      {highest_card_played}")
+
+if highest_card_opportunity > 0:
+    print(f"Usage rate: {highest_card_played / highest_card_opportunity:.4f}")
