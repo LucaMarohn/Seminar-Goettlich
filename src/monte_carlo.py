@@ -262,10 +262,15 @@ def plot_results(results):
     value_card_labels = [-5, -4, -3, -2, -1] + list(range(1, 11))
 
     # 1) Durchschnittliche Punkte
-    plt.figure(figsize=(8, 5))
-    plt.bar(bot_names, avg_points, yerr=std_points, capsize=5)
-    plt.ylabel("Average points")
-    plt.title("Average points with standard deviation")
+    fig, ax = plt.subplots(figsize=(8, 5))
+    bars = ax.bar(bot_names, avg_points, yerr=std_points, capsize=5)
+    for bar, val in zip(bars, avg_points):
+        ax.text(bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 0.3,
+                f"{val:.2f}",
+                ha='center', va='bottom', fontsize=11, fontweight='bold')
+    ax.set_ylabel("Average points")
+    ax.set_title("Average points with standard deviation")
     plt.tight_layout()
 
     # 2) Rangverteilung
