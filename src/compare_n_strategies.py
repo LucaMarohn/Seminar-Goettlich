@@ -20,13 +20,10 @@ from learning_flexibel import fixed_assignment_bot
 # SORTED_VALUE_CARDS = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 # index               =  0   1   2   3   4  5  6  7  8  9 10 11 12 13  14
 #
-# n=3  score=15.91  groups: low(6)=[-1,1,2,3,6,7]  mid(6)=[-5,-4,-3,-2,4,5]  high(3)=[8,9,10]
-# n=4  score=15.74  groups: low(4)=[1,3,6,7]  mid-low(3)=[-1,2,4]  mid-high(5)=[-5,-4,-3,-2,5]  high(3)=[8,9,10]
-# n=5  score=9.24   groups: very-low(3)=[2,3,6]  low(3)=[-2,1,7]  mid(3)=[-5,-3,10]  high(3)=[-1,5,9]  very-high(3)=[-4,4,8]
 
-ASSIGNMENT_N3 = np.array([1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 2, 2, 2])
-ASSIGNMENT_N4 = np.array([2, 2, 2, 2, 1, 0, 1, 0, 1, 2, 0, 0, 3, 3, 3])
-ASSIGNMENT_N5 = np.array([2, 4, 2, 1, 3, 1, 0, 0, 4, 3, 0, 1, 4, 3, 2])
+ASSIGNMENT_N3 = np.array([1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 2, 2, 2, 2])
+ASSIGNMENT_N4 = np.array([2, 2, 1, 1, 0, 0, 0, 0, 1, 2, 0, 3, 3, 3, 2])
+ASSIGNMENT_N5 = np.array([3, 3, 2, 3, 2, 1, 0, 2, 4, 1, 4, 0, 1, 4, 0])
 
 if __name__ == "__main__":
     SEED = 42

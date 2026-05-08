@@ -5,13 +5,14 @@ import os
 def clear_screen():
     os.system("clear")
 
-def round_engine(value_cards, play, points):
+def round_engine(value_cards, play, points, revealed_card=None):
     value_cards = value_cards.copy()
     play = play.copy()
 
     value_card_1 = value_cards[0]
+    sign_card = revealed_card if revealed_card is not None else value_card_1
 
-    if value_card_1 >= 0:
+    if sign_card >= 0:
         # highest unique wins (ties get removed iteratively)
         while len(play[play == play.max()]) > 1 and play.max() > 0:
             play[play == play.max()] = 0

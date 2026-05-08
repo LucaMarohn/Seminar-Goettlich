@@ -36,6 +36,8 @@ from strategy import (
     bot_randomizer,
     bot_negative_strategy,
     bot_interval_strategy,
+    bot_get_high_cards_schonen,
+    bot_memory_high_advantage,
 )
 
 # ── Constants ─────────────────────────────────────────────────────────────────
@@ -54,6 +56,44 @@ def _group_names(n):
     if n == 3: return ['low', 'mid', 'high']
     if n == 4: return ['low', 'mid-low', 'mid-high', 'high']
     return ['very-low', 'low', 'mid', 'high', 'very-high']
+
+
+# ── Random-strategy opponent ──────────────────────────────────────────────────
+
+_ALL_STRATEGIES = [
+    bot_randomizer,
+    bot_negative_strategy,
+    bot_interval_strategy,
+    #bot_get_high_cards,
+    bot_get_high_cards_schonen,
+    bot_memory_high_advantage,
+]
+
+_strategy_counts = {s.__name__: 0 for s in _ALL_STRATEGIES}
+
+
+def random_strategy_bot(player_idx, hands, value_card,
+                        rng=None, reveal=False, value_cards_remaining=None):
+    """Picks one of the available strategies at random on every card play."""
+    if rng is None:
+        rng = np.random.default_rng()
+    strategy = _ALL_STRATEGIES[int(rng.integers(len(_ALL_STRATEGIES)))]
+    _strategy_counts[strategy.__name__] += 1
+    return strategy(player_idx, hands, value_card,
+                    rng=rng, reveal=reveal,
+                    value_cards_remaining=value_cards_remaining)
+
+
+def print_strategy_counts(reset=False):
+    total = sum(_strategy_counts.values())
+    print("\nStrategy selection counts:")
+    for name, count in _strategy_counts.items():
+        pct = 100 * count / total if total else 0
+        print(f"  {name:<30}  {count:>7}  ({pct:.1f}%)")
+    print(f"  {'total':<30}  {total:>7}")
+    if reset:
+        for k in _strategy_counts:
+            _strategy_counts[k] = 0
 
 
 # ── Fixed-assignment bot ──────────────────────────────────────────────────────
@@ -115,8 +155,8 @@ def _random_valid_assignment(rng, n_groups):
             return a
 
 
-def optimize_assignment(n_groups, opponents, bot_idx=0, n_eval=500,
-                        max_rounds=15, n_restarts=5, seed=42, verbose=True):
+def optimize_assignment(n_groups, opponents, bot_idx=0, n_eval=1000,
+                        max_rounds=15, n_restarts=10, seed=42, verbose=True):
     """
     Coordinate-descent optimisation with n_groups fixed.
 
@@ -262,10 +302,10 @@ def plot_comparison(results_by_n):
             ax.text(i, 0.5, str(vc), ha='center', va='center',
                     fontsize=9.5, fontweight='bold', color='white')
         ax.set_xlim(-0.5, N_VC - 0.5)
-        ax.set_ylim(0, 1.6)
+        ax.set_ylim(0, 1.45)
         ax.set_xticks([]); ax.set_yticks([])
         winner_tag = "  ← winner" if n == best_n else ""
-        ax.set_title(f"n = {n}  |  avg score = {score:.4f}{winner_tag}", fontsize=10)
+        ax.set_xlabel(f"n = {n}  |  avg score = {score:.4f}{winner_tag}", fontsize=10)
         handles = [
             Patch(facecolor=colors[g],
                   label=f'{gnames[g]}  → hand {intervals[g]}')
@@ -291,9 +331,9 @@ if __name__ == "__main__":
         return wrapper
 
     opponents = [
-        silent(bot_randomizer),
-        silent(bot_negative_strategy),
-        silent(bot_interval_strategy),
+        silent(random_strategy_bot),
+        silent(random_strategy_bot),
+        silent(random_strategy_bot),
     ]
     BOT_IDX = 3
 
@@ -307,9 +347,9 @@ if __name__ == "__main__":
             n_groups   = n,
             opponents  = opponents,
             bot_idx    = BOT_IDX,
-            n_eval     = 500,
+            n_eval     = 1000,
             max_rounds = 15,
-            n_restarts = 5,
+            n_restarts = 10,
             seed       = SEED,
             verbose    = True,
         )
@@ -348,8 +388,8 @@ if __name__ == "__main__":
     print("=" * 60)
 
     bots = [fixed_assignment_bot(results_by_n[n][0], n) for n in N_GROUPS_OPTS]
-    bot_names = [f"Opt n={n}" for n in N_GROUPS_OPTS] + ["Interval baseline"]
-    all_strats = bots + [silent(bot_interval_strategy)]
+    bot_names = [f"Opt n={n}" for n in N_GROUPS_OPTS] 
+    all_strats = bots 
 
     mc_results = monte_carlo_compare(
         bot_strategies = all_strats,
@@ -359,3 +399,5 @@ if __name__ == "__main__":
     )
     print_results(mc_results)
     plot_results(mc_results)
+
+    print_strategy_counts()

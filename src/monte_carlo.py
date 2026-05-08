@@ -72,14 +72,14 @@ def simulate_game(bot_strategies, rng):
             chosen_card = strategy(
                 i,
                 hands,
-                visible_value_card,
+                revealed_single_card,
                 rng,
                 value_cards_remaining=value_cards.copy(),
             )
             plays.append(chosen_card)
 
         play = np.array(plays, dtype=int)
-        value_cards, points = round_engine(value_cards, play, points)
+        value_cards, points = round_engine(value_cards, play, points, revealed_single_card)
 
         delta = points - points_before
         round_winners = np.where(delta[0] != 0)[0]
