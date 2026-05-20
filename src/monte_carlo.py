@@ -263,7 +263,18 @@ def plot_results(results):
 
     # 1) Durchschnittliche Punkte
     plt.figure(figsize=(8, 5))
-    plt.bar(bot_names, avg_points, yerr=std_points, capsize=5)
+    bars = plt.bar(bot_names, avg_points, yerr=std_points, capsize=5)
+    for bar, val in zip(bars, avg_points):
+        plt.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() - 0.3,
+            f"{val:.2f}",
+            ha="center",
+            va="top",
+            fontsize=9,
+            color="white",
+            fontweight="bold",
+        )
     plt.ylabel("Average points")
     plt.title("Average points with standard deviation")
     plt.tight_layout()
@@ -337,23 +348,25 @@ def plot_results(results):
 
 if __name__ == "__main__":
     bot_strategies = [
-        bot_randomizer,
-        bot_negative_strategy,
+        #bot_randomizer,
+        #bot_negative_strategy,
         #bot_get_high_cards,
         #bot_memory_high_advantage, 
         bot_get_high_cards_schonen,
-        #bot_get_high_cards_schonen,
+        bot_get_high_cards_schonen,
+        bot_interval_strategy,
         bot_interval_strategy
     ]
 
     bot_names = [
-        "Randomizer A",
-        "Negative Strategy",
-        #"Get High Cards",
+        #"Randomizer",
+        #"Negative Strategy",
+        "Get High Cards",
         #"Memory High Advantage",
-        "Get High Cards Schonen",
-        #"Get High Cards Schonen 2",
-        "Interval Strategy"
+        #"Get High Cards Schonen",
+        "Get High Cards 2",
+        "Interval Strategy",
+        "Interval Strategy 2",
     ]
 
     results = monte_carlo_compare(
