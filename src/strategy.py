@@ -154,6 +154,100 @@ def bot_interval_strategy(player_idx, hands, value_card, rng=None, reveal=True, 
 
     return choice
 
+def bot_interval_n3_strategy(player_idx, hands, value_card, rng=None, reveal=True, value_cards_remaining=None):
+    """Optimised 3-interval strategy (ASSIGNMENT_N3 from compare_n_strategies.py).
+
+    Groups derived from coordinate-descent (seed=42):
+      Group 0 → value cards {-1,1,2,3,4,6}  → hand [1..6]
+      Group 1 → value cards {-5,-4,-3,-2,5} → hand [7..11]
+      Group 2 → value cards {7,8,9,10}       → hand [12..15]
+    """
+    hand = hands[player_idx]
+
+    if rng is None:
+        rng = np.random.default_rng()
+
+    # value card → hand interval
+    interval_map = {
+        -1: (1, 6),
+         1: (1, 6),
+         2: (1, 6),
+         3: (1, 6),
+         4: (1, 6),
+         6: (1, 6),
+        -5: (7, 11),
+        -4: (7, 11),
+        -3: (7, 11),
+        -2: (7, 11),
+         5: (7, 11),
+         7: (12, 15),
+         8: (12, 15),
+         9: (12, 15),
+        10: (12, 15),
+    }
+
+    if value_card in interval_map:
+        lo, hi = interval_map[value_card]
+        candidates = [c for c in hand if lo <= c <= hi]
+    else:
+        candidates = []
+
+    choice = int(rng.choice(candidates if candidates else hand))
+    hand.remove(choice)
+
+    if reveal:
+        print(f"Bot (Player {player_idx + 1}) played: {choice}")
+
+    return choice
+
+
+def bot_interval_n4_strategy(player_idx, hands, value_card, rng=None, reveal=True, value_cards_remaining=None):
+    """Optimised 4-interval strategy (ASSIGNMENT_N4 from compare_n_strategies.py).
+
+    Groups derived from coordinate-descent (seed=42):
+      Group 0 → value cards {-1,1,2,3,6}    → hand [1..5]
+      Group 1 → value cards {-3,-2,4}        → hand [6..8]
+      Group 2 → value cards {-5,-4,5,10}     → hand [9..12]
+      Group 3 → value cards {7,8,9}           → hand [13..15]
+    """
+    hand = hands[player_idx]
+
+    if rng is None:
+        rng = np.random.default_rng()
+
+    interval_map = {
+        -1: (1, 5),
+         1: (1, 5),
+         2: (1, 5),
+         3: (1, 5),
+         6: (1, 5),
+        -3: (6, 8),
+        -2: (6, 8),
+         4: (6, 8),
+        -5: (9, 12),
+        -4: (9, 12),
+         5: (9, 12),
+        10: (9, 12),
+         7: (13, 15),
+         8: (13, 15),
+         9: (13, 15),
+    }
+
+    if value_card in interval_map:
+        lo, hi = interval_map[value_card]
+        candidates = [c for c in hand if lo <= c <= hi]
+    else:
+        candidates = []
+
+    choice = int(rng.choice(candidates if candidates else hand))
+    hand.remove(choice)
+
+    if reveal:
+        print(f"Bot (Player {player_idx + 1}) played: {choice}")
+
+    return choice
+
+
 # globale Zähler
 highest_card_opportunity = 0
 highest_card_played = 0
